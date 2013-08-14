@@ -14,7 +14,7 @@ class Plugin_Mystreams extends Plugin
 
     private $dir;
 
-    public function info()
+    public function __construct()
     {
         // use for default namespace
         $this->dir = $this->config->item('mystreams_dir');
