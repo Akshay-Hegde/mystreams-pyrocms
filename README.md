@@ -11,7 +11,8 @@ In MyStreams all streams are set up in config file(s) before installing the modu
 
 To create a simplest stream, edit 2 files in config directory:
 
-mystreams.php
+config/mystreams.php
+
 	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 	// used in uri, change only if you are renaming the module
@@ -41,7 +42,8 @@ mystreams.php
 		)
 	);
 
-routes.php
+config/routes.php
+
 	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 	$route = array();
@@ -49,5 +51,30 @@ routes.php
 	$route['mystreams/admin/index'] = 'admin';
 	$route['mystreams/admin/humans(:any)?'] = 'admin$1';
 
-This setup will create (after you installed the module) a strem "humans" with a field "humans_full_name". Entries can be added/edited under admin - content - MyStreams. Full setup example is provided with this repo. Please check the config directory.
+This setup will create (after you installed the module) a stream "humans" with a field "humans_full_name". Entries can be added/edited under admin - content - MyStreams. Full setup example is provided with this repo. Please check the config directory.
+
+### Plugin
+
+MyStreams has a plugin with following methods:
+
+mystreams:cycle
+
+Please see the pyrocms docs for params:
+http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver
+
+namespace - defaults to mystreams_dir specified in config/mystreams.php
+order_by - defaults to ordering_count
+sort - defaults to asc
+
+	{{ mystreams:cycle stream="persons" namespace="family" }}
+		{{ persons_first_name }} {{ persons_city:locations_city }}<br>
+	{{ /mystreams:cycle }}
+	
+mystreams:single
+
+Only possible to specify id, stream and namespace. 
+
+	{{ mystreams:single id="2" stream="persons" namespace="family" }}
+		{{ persons_first_name }}
+	{{ /mystreams:single }}
 
