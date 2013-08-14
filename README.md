@@ -12,8 +12,7 @@ In MyStreams all streams are set up in config file(s) before installing the modu
 To create a simplest stream, edit 2 files in config directory:
 
 mystreams.php
-
-	```<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 	// used in uri, change only if you are renaming the module
 	$config['mystreams_dir'] = 'mystreams';
@@ -41,17 +40,14 @@ mystreams.php
 			)
 		)
 	);
-	```
 
 routes.php
-
-	```<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 	$route = array();
 
 	$route['mystreams/admin/index'] = 'admin';
 	$route['mystreams/admin/humans(:any)?'] = 'admin$1';
-	```
 
 This setup will create (after you installed the module) a strem "humans" with a field "humans_full_name". Entries can be added/edited under admin - content - MyStreams. Full setup example is provided with this repo. Please check the config directory.
 
