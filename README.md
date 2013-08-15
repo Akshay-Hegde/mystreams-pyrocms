@@ -70,7 +70,7 @@ Please see the pyrocms docs for params:
 http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver
 
 * namespace - defaults to mystreams_dir specified in config/mystreams.php
-* order_by - defaults to ordering_count
+* order_by - defaults to "ordering_count"
 * sort - defaults to asc
 
 	{{ mystreams:cycle stream="persons" namespace="family" }}
