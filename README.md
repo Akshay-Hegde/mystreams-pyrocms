@@ -58,6 +58,12 @@ config/routes.php
 	$route['mystreams/admin/index'] = 'admin';
 	$route['mystreams/admin/humans(:any)?'] = 'admin$1';
 
+To retrieve data, use mystreams:cycle plugin.
+
+	{{ mystreams:cycle stream="humans" }}
+		{{ humans_full_name }}<br>
+	{{ /mystreams:cycle }}
+
 This setup will create (after you installed the module) a stream "humans" with a field "humans_full_name". Entries can be added/edited under admin - content - MyStreams. Full setup example is provided with this repo. Please check the config directory.
 
 ### Plugin
