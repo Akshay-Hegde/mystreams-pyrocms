@@ -29,7 +29,7 @@ class Admin extends Admin_Controller
     {
         $extra = array();
 
-        $extra['title'] = $this->options['name'] . ' | MyStreams';
+        $extra['title'] = $this->options['name'] . ' | ' . lang('mystreams:module');
 
         $extra['buttons'] = array(
             array(
@@ -54,7 +54,7 @@ class Admin extends Admin_Controller
             'return' => 'admin/' . $this->dir . '/' . $this->section,
             'success_message' => lang('mystreams:success'),
             'failure_message' => lang('mystreams:error'),
-            'title' => $this->options['name'] . ' | ' . lang('mystreams:create') . ' | MyStreams'
+            'title' => $this->options['name'] . ' | ' . lang('mystreams:create') . ' | ' . lang('mystreams:module')
         );
 
         $this->streams->cp->entry_form($this->section, $this->options['namespace'], 'new', null, true, $extra);
@@ -66,7 +66,7 @@ class Admin extends Admin_Controller
             'return' => 'admin/' . $this->dir . '/' . $this->section,
             'success_message' => lang('mystreams:success'),
             'failure_message' => lang('mystreams:error'),
-            'title' => $this->options['name'] . ' | ' . lang('mystreams:edit') . ' | MyStreams'
+            'title' => $this->options['name'] . ' | ' . lang('mystreams:edit') . ' | ' . lang('mystreams:module')
         );
 
         $this->streams->cp->entry_form($this->section, $this->options['namespace'], 'edit', $id, true, $extra);
