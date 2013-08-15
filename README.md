@@ -76,7 +76,7 @@ http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver
 	{{ mystreams:cycle stream="persons" namespace="family" }}
 		{{ persons_first_name }} {{ persons_city:locations_city }}<br>
 	{{ /mystreams:cycle }}
-	
+
 mystreams:single
 
 Only possible to specify id, stream and namespace. 
@@ -84,4 +84,3 @@ Only possible to specify id, stream and namespace.
 	{{ mystreams:single id="2" stream="persons" namespace="family" }}
 		{{ persons_first_name }}
 	{{ /mystreams:single }}
-
