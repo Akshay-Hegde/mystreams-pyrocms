@@ -82,16 +82,18 @@ MyStreams has a plugin with following methods. Examples are for the full streams
 
 ##### mystreams:cycle
 
-Please see the pyrocms docs for params:
-http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver
+Please see the [pyrocms docs](http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver) for params!
+<br />
+<br />
 
 	{{ mystreams:cycle stream="persons" namespace="family" }}
 		{{ persons_first_name }} {{ persons_city:locations_city }}<br>
 	{{ /mystreams:cycle }}
+<br />
 
-- namespace - defaults to mystreams_dir specified in config/mystreams.php
-- order_by - defaults to "ordering_count"
-- sort - defaults to asc
+- **namespace** - defaults to mystreams_dir specified in *config/mystreams.php*
+- **order_by** - defaults to "ordering_count"
+- **sort** - defaults to asc
 <br />
 <br />
 
