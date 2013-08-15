@@ -4,6 +4,7 @@ PyroCMS module that makes creating streams and editing entries very easy. It doe
 
 * version - 1.0.0
 * Author (Tanel Tammik) (keevitaja@gmail.com)
+* [Support in PyroCMS forum] (https://forum.pyrocms.com/discussion/24739/mystreams-module-for-working-with-streams)
 
 ### Screenshots
 
@@ -61,7 +62,7 @@ This setup will create (after you installed the module) a stream "humans" with a
 
 ### Plugin
 
-MyStreams has a plugin with following methods:
+MyStreams has a plugin with following methods. Examples are for the full streams.php example in this repo!
 
 mystreams:cycle
 
