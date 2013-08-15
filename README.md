@@ -5,6 +5,12 @@ PyroCMS module that makes creating streams and editing entries very easy. It doe
 * version - 1.0.0
 * Author (Tanel Tammik) (keevitaja@gmail.com)
 
+### Screenshots
+
+* https://raw.github.com/keevitaja/mystreams-pyrocms/master/screenshot-entries.png
+* https://raw.github.com/keevitaja/mystreams-pyrocms/master/screenshot-new.png
+* https://raw.github.com/keevitaja/mystreams-pyrocms/master/screenshot-edit.png
+
 ## Usage
 
 In MyStreams all streams are set up in config file(s) before installing the module. Yes, it does not have GUI to administrate the streams. GUI is only for creating/updating/deleting entries. Never the less setting up a stream is reasonably easy!
