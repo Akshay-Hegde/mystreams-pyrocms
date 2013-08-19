@@ -1,5 +1,8 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+// family is the namespace
+// persons is the stream
+
 $config['mystreams']['family'] = array(
     'persons' => array(
         'name' => 'Persons',
