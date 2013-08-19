@@ -1,6 +1,7 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-$route['mystreams/admin/index'] = 'admin';
-$route['mystreams/admin/persons(:any)?'] = 'admin$1';
-$route['mystreams/admin/pets(:any)?'] = 'admin$1';
-$route['mystreams/admin/locations(:any)?'] = 'admin$1';
+$app_name = 'mystreams';
+
+$route[$app_name . '/admin/(:any)/(:any)/(:any)/(:any)?'] = 'admin/$3/$4';
+$route[$app_name . '/admin/(:any)/(:any)/(:any)?'] = 'admin/$3';
+$route[$app_name . '/admin/(:any)/(:any)(:any)?'] = 'admin$3';

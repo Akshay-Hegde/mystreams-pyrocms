@@ -1,12 +1,10 @@
 # MyStreams for PyroCMS
 
-PyroCMS module that makes creating streams and editing entries very easy. It does not want to compete with PyroStreams, but still very useful.
+MyStreams module for PyroCMS makes creating streams and editing entries very easy. Though it does not have GUI for streams administration, it is still smart and helpful tool. Before installing the module, all streams (including relationships) must be set in *config/mystreams.php* file.
 
-- version - 1.0.0
+- version - 1.2.0
 - Author  - Tanel Tammik - keevitaja@gmail.com
 - Support - [PyroCMS forum](https://forum.pyrocms.com/discussion/24739/mystreams-module-for-working-with-streams)
-<br />
-<br />
 
 #### Screenshots
 
@@ -14,93 +12,81 @@ PyroCMS module that makes creating streams and editing entries very easy. It doe
 - [New entry](https://raw.github.com/keevitaja/mystreams-pyrocms/master/screenshot-new.png)
 - [Edit entry](https://raw.github.com/keevitaja/mystreams-pyrocms/master/screenshot-edit.png)
 
-## Usage
+## Basic usage
 
-In MyStreams all streams are set up in config file(s) before installing the module. Yes, it does not have GUI to administrate the streams. GUI is only for creating/updating/deleting entries. Never the less setting up a stream is reasonably easy!
-
-To create a simplest stream, edit 2 files in config directory:
-<br />
+To set up a simple stream, all you need to do is to edit config file.
 
 *config/mystreams.php*
+```php
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+$config['mystreams']['myapp'] = array(
+    'people' => array(
+        'name' => 'People',
+        'fields' => array(
+            array(
+                'name' => 'Persons name',
+                'slug' => 'name',
+                'type' => 'text'
+            )
+        ),
+        'update_stream' => array(
+            'view_options' => array(
+                'id',
+                'name'
+            )
+        )
+    )
+);
+```
 
-	// used in uri, change only if you are renaming the module
-	$config['mystreams_dir'] = 'mystreams';
+This setup will create new stream *people* into the *myapp* namespace. More complex example is provided with this repo. 
 
-	// streams data
-	$config['mystreams'] = array(
-		'humans' => array(
-			'name' => 'Humans',
-			'namespace' => 'mystreams',
-			'prefix' => 'my_',
-			'fields' => array(
-				array(
-					'name' => 'Full Name',
-					'slug' => 'humans_full_name',
-					'namespace' => 'mystreams',
-					'type' => 'text',
-					'assign' => 'humans'
-				)
-			),
-			'update_stream' => array(
-				'view_options' => array(
-					'id',
-					'humans_full_name'
-				)
-			)
-		)
-	);
-<br />
+> You have to edit the *mystreams.php* before installing the module!
 
-*config/routes.php*
+To create/update/delete entries point your browser to admin, content, MyStreams.
 
-	<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+In layoyt file you can retrieve entries with:
 
-	$route = array();
-
-	$route['mystreams/admin/index'] = 'admin';
-	$route['mystreams/admin/humans(:any)?'] = 'admin$1';
-<br />
-
-To retrieve data, use *mystreams:cycle* plugin:
-<br />
-
-	{{ mystreams:cycle stream="humans" }}
-		{{ humans_full_name }}<br>
+	{{ mystreams:cycle stream="people" }}
+		total: {{ total }}<br>
+		{{ entries }}
+			{{ name }} <br>
+		{{ /entries }}
 	{{ /mystreams:cycle }}
-<br />
-<br />
+	
+## Plugin
 
-This setup will create (after you installed the module) a stream "humans" with a field "humans_full_name". Entries can be added/edited under admin - content - MyStreams. Full setup example is provided with this repo. Please check the config directory.
+Please see the [PyroCMS Docs](http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver) for complete list of params.
 
-### Plugin
+You can assigne streams to more than one namespace as shown in the example config file *config/mystreams.php* in this repo.
 
-MyStreams has a plugin with following methods. Examples are for the full streams.php example in this repo!
-<br />
-<br />
-
-##### mystreams:cycle
-
-Please see the [pyrocms docs](http://docs.pyrocms.com/2.2/manual/developers/tools/streams-api/entries-driver) for params!
-<br />
-<br />
-
-	{{ mystreams:cycle stream="persons" namespace="family" }}
-		{{ persons_first_name }} {{ persons_city:locations_city }}<br>
+	{{ mystreams:cycle stream="pets" namespace="animals" }}
+		total: {{ total }}<br>
+		{{ entries }}
+			{{ name }} <br>
+		{{ /entries }}
 	{{ /mystreams:cycle }}
-<br />
 
-- **namespace** - defaults to mystreams_dir specified in *config/mystreams.php*
-- **order_by** - defaults to "ordering_count"
-- **sort** - defaults to asc
-<br />
-<br />
+If you are using first namespace in the config file, you do not have to specify it, because it will default to the first namespace.
 
-##### mystreams:single
+To see all available tags, use `{{ mystreams:test stream="pets" namespace="animals" }}` which will print out all values with print_r().
 
-Only possible to specify id, stream and namespace. 
+## Renaming the module
 
-	{{ mystreams:single id="2" stream="persons" namespace="family" }}
-		{{ persons_first_name }}
-	{{ /mystreams:single }}
+To rename the module, change following files:
+
+- **change module directory**
+- **details.php** - change the class name, in info() method change the name and the description
+- **plugin.php** - change the class name, $name and $description
+- **config/routes.php** - change the value of $app_name
+
+All these must get same value, except the descriptions.
+
+## The Future
+
+At some point, installing streams will be moved out of the module installation proccess. Then it will be possible to add streams and fields without the need of reinstalling (and loosing all the data) the entire module.
+
+
+
+

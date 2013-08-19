@@ -2,7 +2,7 @@
 
 class Plugin_Mystreams extends Plugin
 {
-    public $version = '1.0.0';
+    public $version = '1.2.0';
 
     public $name = array(
         'en' => 'MyStreams',
@@ -12,38 +12,70 @@ class Plugin_Mystreams extends Plugin
         'en' => 'Plugin for displaying streams',
     );
 
-    private $dir;
-
-    public function __construct()
-    {
-        // use for default namespace
-        $this->dir = $this->config->item('mystreams_dir');
-    }
-
     // gets stream entries
-    public function cycle()
+    public function cycle($params = false)
     {
-        $params = $this->attributes();
+        $params = ($params) ? $params : $this->attributes();
 
-        // set default params
-        $params['namespace'] = (isset($params['namespace'])) ? $params['namespace'] : $this->dir;
+        $streams_config = $this->config->item('mystreams');
+
+        // set defaults
+        $params['namespace'] = (isset($params['namespace'])) ? $params['namespace'] : key($streams_config);
         $params['order_by'] = (isset($params['order_by'])) ? $params['order_by'] : 'ordering_count';
         $params['sort'] = (isset($attributes['sort'])) ? $attributes['sort'] : 'asc';
 
-        $entries = $this->streams->entries->get_entries($params);
+        $stream_data = $this->streams->entries->get_entries($params);
+        //$entries = $stream_data['entries'];
 
-        return $entries['entries'];
+        $fields = $streams_config[$params['namespace']][$params['stream']]['fields'];
+
+        foreach ($stream_data['entries'] as &$entry)
+        {
+            foreach ($fields as $field)
+            {
+                $slug = $field['slug'];
+                $db_slug = $params['namespace'] . '_' . $params['stream'] . '_' . $field['slug'];
+
+                if ($field['type'] != 'relationship')
+                {
+                    $entry[$slug] = $entry[$db_slug];
+                }
+                else
+                {
+                    $relation_stream = $field['extra']['choose_stream'];
+
+                    $relation_fields = $streams_config[$params['namespace']][$relation_stream]['fields'];
+
+                    foreach ($relation_fields as $relation_field)
+                    {
+                        if (isset($relation_field['title_column']) and $relation_field['title_column'] == true)
+                        {
+                            $relation_slug = $relation_field['slug'];
+
+                            break;
+                        }
+                    }
+
+                    if (isset($relation_slug))
+                    {
+                        $relation_db_slug = $params['namespace'] . '_' . $relation_stream . '_' . $relation_slug;
+
+                        $entry[$slug] = $entry[$db_slug][$relation_db_slug];
+                    }
+                }
+            }
+        }
+
+        unset($entry);
+
+        return array($stream_data);
     }
 
-    // gets single stream entry
-    // nested variables are not working, use cycle with where param
-    public function single()
+    // for testing streams in development stage
+    public function test()
     {
-        $id = $this->attribute('id');
-        $stream = $this->attribute('stream');
-        $namespace = $this->attribute('namespace');
-        $namespace = ($namespace) ? $namespace : $this->dir;
+        $stream_data = $this->cycle($this->attributes());
 
-        return (array)$this->streams->entries->get_entry($id, $stream, $namespace);
+        return '<pre>' . print_r($stream_data, true) . '</pre>';
     }
 }

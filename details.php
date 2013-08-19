@@ -2,35 +2,48 @@
 
 class Module_Mystreams extends Module
 {
-    public $version = '1.0.1';
+    public $version = '1.2.0';
+
+    private $module_name;
+
+    private $streams_data;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->config->load('mystreams/mystreams');
+        $this->module_name = strtolower(str_replace('Module_', '', get_class()));
+
+        $this->load->driver('Streams');
+
+        $this->config->load($this->module_name . '/mystreams');
+
+        $this->streams_data = $this->config->item('mystreams');
     }
 
-    public function _sections()
+    // formats section data for admin menu
+    private function _sections()
     {
-        $streams = $this->config->item('mystreams');
-        $dir = $this->config->item('mystreams_dir');
-
         $sections = array();
 
-        foreach ($streams as $stream => $data)
+        foreach ($this->streams_data as $namespace => $stream)
         {
-            $sections[$stream] = array(
-                'name' => $data['name'],
-                'uri' => 'admin/' . $dir . '/' . $stream,
-                'shortcuts' => array(
-                    'create' => array(
-                        'name' => 'global:add',
-                        'uri' => 'admin/' . $dir . '/' . $stream . '/create',
-                        'class' => 'add'
+            foreach ($stream as $stream_slug => $stream_data)
+            {
+                $uri = implode('/', array('admin', $this->module_name, $namespace, $stream_slug));
+
+                $sections[$stream_slug] = array(
+                    'name' => $stream_data['name'],
+                    'uri' => $uri,
+                    'shortcuts' => array(
+                        'create' => array(
+                            'name' => 'global:add',
+                            'uri' => $uri . '/create',
+                            'class' => 'add'
+                        )
                     )
-                )
-            );
+                );
+            }
         }
 
         return $sections;
@@ -51,54 +64,85 @@ class Module_Mystreams extends Module
         );
     }
 
+    private function uninstall_streams()
+    {
+        foreach (array_keys($this->streams_data) as $namespace)
+        {
+            $this->streams->utilities->remove_namespace($namespace);
+        }
+    }
+
     public function install()
     {
-        $this->load->driver('Streams');
+        $this->uninstall_streams();
 
-        $streams = $this->config->item('mystreams');
+        // install streams
+        $installed_streams = array();
 
-        // remove streams
-        foreach ($streams as $data)
+        foreach ($this->streams_data as $namespace => $stream)
         {
-            $this->streams->utilities->remove_namespace($data['namespace']);
-        }
-
-        $created_streams = array();
-
-        // add streams
-        foreach ($streams as $stream => $data)
-        {
-            $created_streams[$stream] = $this->streams->streams->add_stream($data['name'], $stream, $data['namespace'], $data['prefix'], null);
-
-            if ( ! $created_streams[$stream])
+            foreach ($stream as $stream_slug => $stream_data)
             {
-                return false;
+                $installed_streams[$stream_slug] = $this->streams->streams->add_stream(
+                    $stream_data['name'],
+                    $stream_slug,
+                    $namespace,
+                    $namespace . '_',
+                    null
+                );
             }
         }
 
-        // update relationships
-        foreach ($streams as $stream => $data)
+        // install fields
+        $fields = array();
+
+        foreach ($this->streams_data as $namespace => $stream)
         {
-            foreach ($data['fields'] as $key => $field)
+            foreach ($stream as $stream_slug => $stream_data)
             {
-                if ($field['type'] == 'relationship')
+                foreach ($stream_data['fields'] as $field)
                 {
-                    if (isset($created_streams[$field['extra']['choose_stream']]))
+                    $field['slug'] = $namespace . '_' . $stream_slug . '_' . $field['slug'];
+                    $field['namespace'] = $namespace;
+                    $field['assign'] = $stream_slug;
+
+                    if ($field['type'] == 'relationship')
                     {
-                        $streams[$stream]['fields'][$key]['extra']['choose_stream'] = $created_streams[$field['extra']['choose_stream']];
+                        $field['extra']['choose_stream'] = $installed_streams[$field['extra']['choose_stream']];
                     }
+
+                    $fields[] = $field;
                 }
             }
         }
 
-        // add fields
-        foreach ($streams as $stream => $data)
-        {
-            $this->streams->fields->add_fields($data['fields']);
+        $this->streams->fields->add_fields($fields);
 
-            if (isset($data['update_stream']))
+        // add view options
+        foreach ($this->streams_data as $namespace => $stream)
+        {
+            foreach ($stream as $stream_slug => $stream_data)
             {
-                $this->streams->streams->update_stream($stream, $data['namespace'], $data['update_stream']);
+                $fields_slugs = array();
+
+                foreach ($stream_data['fields'] as $field)
+                {
+                    $fields_slugs[] = $field['slug'];
+                }
+
+                $update = $stream_data['update_stream']['view_options'];
+
+                foreach ($update as &$fields_slug)
+                {
+                    if (in_array($fields_slug, $fields_slugs))
+                    {
+                        $fields_slug = $namespace . '_' . $stream_slug . '_' . $fields_slug;
+                    }
+                }
+
+                unset($fields_slug);
+
+                $this->streams->streams->update_stream($stream_slug, $namespace, array('view_options' => $update));
             }
         }
 
@@ -107,14 +151,7 @@ class Module_Mystreams extends Module
 
     public function uninstall()
     {
-        $this->load->driver('Streams');
-
-        $streams = $this->config->item('mystreams');
-
-        foreach ($streams as $data)
-        {
-            $this->streams->utilities->remove_namespace($data['namespace']);
-        }
+        $this->uninstall_streams();
 
         return true;
     }
